@@ -5,7 +5,7 @@ import (
 
 	"github.com/Alejandro9912/twitterGo/models"
 	"github.com/aws/aws-sdk-go-v2/internal/strings"
-	"github.com/golang-jwt/jwt/v5"
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 var Email string
