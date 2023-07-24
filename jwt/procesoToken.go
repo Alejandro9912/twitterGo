@@ -2,9 +2,9 @@ package jwt
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/Alejandro9912/twitterGo/models"
-	"github.com/aws/aws-sdk-go-v2/internal/strings"
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 

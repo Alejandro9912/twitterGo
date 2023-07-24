@@ -9,7 +9,7 @@ import (
 	"github.com/Alejandro9912/twitterGo/bd"
 	"github.com/Alejandro9912/twitterGo/handdlers"
 	"github.com/Alejandro9912/twitterGo/models"
-	secretmanager "github.com/Alejandro9912/twitterGo/secretManager"
+	secretmanager "github.com/Alejandro9912/twitterGo/secretmanager"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
