@@ -7,6 +7,7 @@ import (
 
 	"github.com/Alejandro9912/twitterGo/awsgo"
 	"github.com/Alejandro9912/twitterGo/bd"
+	"github.com/Alejandro9912/twitterGo/handdlers"
 	"github.com/Alejandro9912/twitterGo/models"
 	secretmanager "github.com/Alejandro9912/twitterGo/secretManager"
 	"github.com/aws/aws-lambda-go/events"
@@ -59,7 +60,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	//Chequeo conexion a la Base de Datos
 
 	err = bd.ConectarBD(awsgo.Ctx)
-	if err != nil{
+	if err != nil {
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 500,
 			Body:       "Error conectando la BD" + err.Error(),
@@ -68,6 +69,20 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 			},
 		}
 		return res, nil
+	}
+
+	respAPI := handdlers.Manejadores(awsgo.Ctx, request)
+	if respAPI.CustomResp == nil {
+		res = &events.APIGatewayProxyResponse{
+			StatusCode: respAPI.Status,
+			Body:       respAPI.Message,
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+		}
+		return res, nil
+	} else {
+		return respAPI.CustomResp, nil
 	}
 }
 
