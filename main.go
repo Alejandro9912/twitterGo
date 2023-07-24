@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Alejandro9912/twitterGo/awsgo"
+	"github.com/Alejandro9912/twitterGo/bd"
 	"github.com/Alejandro9912/twitterGo/models"
 	secretmanager "github.com/Alejandro9912/twitterGo/secretManager"
 	"github.com/aws/aws-lambda-go/events"
@@ -54,6 +55,20 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSing"), SecretModel.JWTSing)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName"))
+
+	//Chequeo conexion a la Base de Datos
+
+	err = bd.ConectarBD(awsgo.Ctx)
+	if err != nil{
+		res = &events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Body:       "Error conectando la BD" + err.Error(),
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+		}
+		return res, nil
+	}
 }
 
 func ValidoParametros() bool {
