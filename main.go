@@ -17,12 +17,14 @@ import (
 func main() {
 	lambda.Start(EjecutoLambda)
 }
-
+// EjecutoLambda es la función de entrada de la Lambda.
+// Maneja las solicitudes entrantes de API Gateway y ejecuta los manejadores correspondientes.
 func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	var res *events.APIGatewayProxyResponse
 
 	awsgo.InicializoAWS()
 
+	// Verifica que todas las variables de entorno necesarias estén presentes.
 	if !ValidoParametros() {
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 400,
@@ -33,6 +35,8 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		}
 		return res, nil
 	}
+
+	// Obtiene el secreto de AWS Secret Manager utilizando el nombre especificado en la variable de entorno 'SecretName'.
 	SecretModel, err := secretmanager.GetSecret(os.Getenv("SecretName"))
 	if err != nil {
 		res = &events.APIGatewayProxyResponse{
@@ -45,6 +49,8 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return res, nil
 	}
 
+
+	// Extrae el parámetro de la ruta de la solicitud y establece los valores en el contexto de awsgo.
 	path := strings.Replace(request.PathParameters["twitterGo"], os.Getenv("UrlPrefix"), "", -1)
 
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("path"), path)
@@ -71,6 +77,8 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return res, nil
 	}
 
+	// Ejecuta los manejadores para la solicitud y obtiene la respuesta.
+
 	respAPI := handdlers.Manejadores(awsgo.Ctx, request)
 	if respAPI.CustomResp == nil {
 		res = &events.APIGatewayProxyResponse{
@@ -82,6 +90,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		}
 		return res, nil
 	} else {
+		// Si hay una respuesta personalizada, devuélvela directamente.
 		return respAPI.CustomResp, nil
 	}
 }

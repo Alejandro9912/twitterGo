@@ -1,3 +1,4 @@
 git add .
-git commit -m "Siguiente commit"
+set /p commitMessage="Introduce el mensaje del commit: "
+git commit -m "%commitMessage%"
 git push
