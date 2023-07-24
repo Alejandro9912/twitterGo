@@ -2,9 +2,11 @@ package twittergo
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/Alejandro9912/twitterGo/awsgo"
+	secretmanager "github.com/Alejandro9912/twitterGo/secretManager"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -23,6 +25,17 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest)(*
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body: "Error en las variables de entorno. Debe incluir 'SecretName', 'BucketName',''UrlPrefix",
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+		}
+		return res, nil
+	}
+	SecretModel,err := secretmanager.GetSecret(os.Getenv("SecretName"))
+	if err !=nil{
+		res = &events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Body: "Error en la lectura de Secret" + err.Error(),
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
